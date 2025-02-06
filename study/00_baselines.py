@@ -7,6 +7,8 @@ import time
 
 from helper import clean_up, create_output_directory
 
+# nvidia-smi
+
 dataloader = DataLoader("./datasets")
 
 for i in range(5):
@@ -15,7 +17,7 @@ for i in range(5):
          train_ds = dataloader.load_data(ds_name, "train", cv=False, target=task)
          test_ds = dataloader.load_data(ds_name, "test", cv=False, target=task)
       
-         for ml_method in ["paraphrase", "mvp", "dlo"]:
+         for ml_method in ["paraphrase"]: #mvp, dlo
             print(f"Task:", task, "Dataset:", ds_name, "Seed:", i, "ML-Method:", ml_method)
             filename = f"./generations/00_baselines/training_{task}_{ds_name}seed-{i}_n-train_{ml_method}.json"
             # check if file already exists
