@@ -69,7 +69,7 @@ class ABSADataset(Dataset):
 
         self.inputs = []
         self.targets = []
-
+        print("train und eval batch-size: ", self.args["train_batch_size"], self.args["eval_batch_size"])
         self._build_examples()
 
     def __len__(self):
@@ -91,8 +91,7 @@ class ABSADataset(Dataset):
         }
 
     def _build_examples(self):
-        
-
+        print("train_batch_size0: ", self.args["train_batch_size"])
         inputs, targets = get_transformed_io(self.task, self.data_type, self.top_k,
                                                  self.args, self.dataset)
         for i in range(len(inputs)):
@@ -187,8 +186,10 @@ def get_para_tasd_targets(sents, labels, top_k):
         device = torch.device('cuda:0')
     else:
         device = torch.device("cpu")
-    tokenizer = T5Tokenizer.from_pretrained("t5-base")
-    model = MyT5ForConditionalGenerationScore.from_pretrained("t5-base").to(device)
+    # for flan-t5-base => ("google/flan-t5-base")
+    # for t5-v1_1-base => ("google/t5-v1_1-base")
+    tokenizer = T5Tokenizer.from_pretrained("t5-large")
+    model = MyT5ForConditionalGenerationScore.from_pretrained("t5-large").to(device)
 
     targets = []
     new_sents = []
@@ -450,11 +451,11 @@ def get_para_asqp_targets(sents, labels, top_k):
         device = torch.device('cuda:0')
     else:
         device = torch.device("cpu")
-    tokenizer = T5Tokenizer.from_pretrained("t5-base")#.to(device)
+    tokenizer = T5Tokenizer.from_pretrained("t5-large")#.to(device)
     #model_org = T5ForConditionalGeneration.from_pretrained("t5-base")
     #torch.save(model_org, "save.pt")
     #model = MyT5ForConditionalGenerationScore.load_state_dict(state_dict=torch.load("save.pt"), strict=True).to(device)
-    model = MyT5ForConditionalGenerationScore.from_pretrained("t5-base").to(device)
+    model = MyT5ForConditionalGenerationScore.from_pretrained("t5-large").to(device)
     targets = []
     new_sents = []
     data_count = {}
@@ -550,6 +551,9 @@ def get_transformed_io(data_name, data_type, top_k, args, dataset):
             return inputs, targets
         else:
             if data_type == "train":
+
+                print("train_batch_size1:", args["train_batch_size"])
+
                 new_inputs, targets = get_para_asqp_targets(inputs, labels, top_k)
             else:
                 targets = get_para_asqp_targets_test(inputs, labels)
@@ -828,6 +832,7 @@ def evaluate(data_loader, model, tokenizer, args):
 
 
 def train_function_dlo(args):
+    print(f"Inside train_dlo: train_batch_size={args['train_batch_size']}, {args['eval_batch_size']}")
     global language
     if args.dataset == 'gerest':
         language = 'german'
@@ -840,7 +845,9 @@ def train_function_dlo(args):
         # sanity check
     # show one sample to check the code and the expected output
     
-    
+    print(args.task)    #asqp
+    print(args.top_k)   #5
+    #print(args)
 
     train_dataset = ABSADataset(tokenizer=tokenizer,
                               task=args.task,
@@ -849,7 +856,7 @@ def train_function_dlo(args):
                               args=args,
                               dataset=args.train_ds,
                               max_len=args.max_seq_length)
-    
+    print('nach train_dataset')
     test_dataset = ABSADataset(tokenizer=tokenizer,
                               task=args.task,
                               data_type='test',

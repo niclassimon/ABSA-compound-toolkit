@@ -1527,7 +1527,7 @@ def train_function_mvp(args):
 
     # training process
     if args.do_train:
-        tokenizer = T5Tokenizer.from_pretrained(args.model_name_or_path, local_files_only=True if args.model_name_or_path != "t5-base" else False)
+        tokenizer = T5Tokenizer.from_pretrained(args.model_name_or_path, local_files_only=True if args.model_name_or_path != "google/flan-t5-large" else False)
 
         # sanity check
         # show one sample to check the code and the expected output
@@ -1544,7 +1544,7 @@ def train_function_mvp(args):
 
         # initialize the T5 model
         tfm_model = MyT5ForConditionalGeneration.from_pretrained(
-            args.model_name_or_path, local_files_only=True if args.model_name_or_path != "t5-base" else False)
+            args.model_name_or_path, local_files_only=True if args.model_name_or_path != "google/flan-t5-large" else False)
         model = T5FineTuner(args, tfm_model, tokenizer, args)
 
         # load data

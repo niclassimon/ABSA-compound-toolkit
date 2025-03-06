@@ -8,8 +8,8 @@ def train_mvp(**kwargs):
     # Standardwerte
     default_args = DotDict({
         "data_path": "./data",
-        "dataset": "rest15",  # Standardwert für dataset
-        "model_name_or_path": "t5-base",
+        "dataset": "gerest",  # Standardwert für dataset
+        "model_name_or_path": "t5-large",
         "output_dir": "../outputs/",
         "num_train_epochs": 20,
         "save_top_k": 0,
@@ -28,6 +28,7 @@ def train_mvp(**kwargs):
         "check_val_every_n_epoch": 10,
         "agg_strategy": "vote",
         "eval_batch_size": 64,
+        "test_batch_size": 8,
         "constrained_decode": True,
         "do_train": True,
         "load_path_cache": False,
@@ -93,7 +94,7 @@ def train_paraphrase(**kwargs):
     # Standardwerte
     default_args = DotDict({
     "task": "asqp",  # Vorgabe, der Wert wird im Skript gesetzt
-    "dataset": "rest15",
+    "dataset": "gerest",
     "model_name_or_path": "t5-base",
     "do_train": True,
     "do_eval": False,  # Standardwert, wenn nicht angegeben
@@ -103,6 +104,7 @@ def train_paraphrase(**kwargs):
     "n_gpu": 0,
     "train_batch_size": 16,
     "eval_batch_size": 16,
+    "test_batch_size": 16,
     "gradient_accumulation_steps": 1,
     "learning_rate": 3e-4,
     "num_train_epochs": 20,  # Dein Wert, Standardwert war 30
@@ -158,8 +160,8 @@ def train_dlo(**kwargs):
     # Standardwerte
     default_args = DotDict({
     "task": "asqp",  # Vorgabe, der Wert wird im Skript gesetzt
-    "dataset": "rest15",
-    "model_name_or_path": "t5-base",
+    "dataset": "gerest",
+    "model_name_or_path": "t5-large",
     "do_train": True,
     "do_eval": False,  # Standardwert, wenn nicht angegeben
     "do_direct_eval": True,
@@ -206,10 +208,11 @@ def train_dlo(**kwargs):
     # Update train_ds und test_ds in den Argumenten
     default_args["train_ds"] = train_ds
     default_args["test_ds"] = test_ds
+    print(default_args["train_batch_size"])
 
     # Training ausführen
     scores = train_function_dlo(default_args)
-
+    print('post')
     # Outputs-Verzeichnis löschen
     shutil.rmtree('classifier/outputs')
     os.makedirs('classifier/outputs', exist_ok=True)
